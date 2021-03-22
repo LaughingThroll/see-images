@@ -1,11 +1,6 @@
 import React from 'react'
-import { StyleSheet, Text, Image, View, TouchableHighlight } from 'react-native'
-
-interface IModalItem {
-  title: string
-  url: string
-  // onPressItem: () => void
-}
+import { StyleSheet, Text, Image } from 'react-native'
+import { IModalItem } from '../types/modalItem'
 
 const ModalItem = ({ title, url }: IModalItem) => {
   return (

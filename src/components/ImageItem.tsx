@@ -1,7 +1,7 @@
 import React from 'react'
 import { TouchableHighlight, StyleSheet, Image } from 'react-native'
 
-import { IImageItem } from './types/imageItem'
+import { IImageItem } from '../types/imageItem'
 
 interface IImageItemComponent extends IImageItem {
   onPressImage?: () => void

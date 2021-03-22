@@ -1,54 +1,55 @@
 import React, { useEffect, useState } from 'react'
-import { StyleSheet, Modal, FlatList, TouchableOpacity } from 'react-native'
+import { useSelector, useDispatch } from 'react-redux'
+import { StyleSheet, Modal, FlatList, TouchableOpacity, Text } from 'react-native'
 
-import Header from './Header'
-import ImageItem from './ImageItem'
-import ModalItem from './ModalItem'
+import { RootState } from './store/store'
+import { getImages } from './store/slices/imagesSlice'
+import { setParams } from './store/slices/modalItemSlice'
 
-import { makeRequest } from './utils/makeRequest'
-import { URL } from './constant'
+import { Header, ImageItem, ModalItem, Loader } from './components'
 
 import { IImageItem } from './types/imageItem'
 
 const MainLayout = () => {
-  const [images, setImages] = useState<IImageItem[]>([])
+  const dispatch = useDispatch()
+  const { error, imagesData } = useSelector((state: RootState) => state.images)
+  const { title, url } = useSelector((state: RootState) => state.modalItem)
+
   const [page, setPage] = useState<number>(1)
-
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false)
-  const [title, setTitle] = useState<string>('')
-  const [urlImage, setUrlImage] = useState<string>('')
-
 
   useEffect(() => {
-    makeRequest(`${URL}photos?_page=${page}&_limit=20`).then(imagesData => setImages([...images, ...imagesData])).catch(console.log)
+    dispatch(getImages(page))
   }, [page])
 
   const changeModalVisible = () => {
     setIsOpenModal(!isOpenModal)
   }
 
-  const handlerModal = ({ url, title }: IImageItem): void => {
-    setTitle(title)
-    setUrlImage(url)
+  const handlerModal = ({ url, title }: IImageItem) => {
+    dispatch(setParams({ title, url }))
     changeModalVisible()
   }
 
   return (
     <>
+      {!!error && <Text>{error}</Text>}
+
       <Modal visible={isOpenModal}>
         <TouchableOpacity onPress={changeModalVisible} >
-          <ModalItem title={title} url={urlImage} />
+          <ModalItem title={title} url={url} />
         </TouchableOpacity>
       </Modal>
 
       <Header />
       <FlatList
         style={styles.container}
-        data={images}
+        data={imagesData}
         onEndReached={() => setPage(page + 1)}
         onEndReachedThreshold={.5}
-        renderItem={({ item }) => <ImageItem {...item} onPressImage={handlerModal.bind(this, item)} />}
+        renderItem={({ item }) => <ImageItem {...item} onPressImage={handlerModal.bind(null, item)} />}
         keyExtractor={(item) => item.id.toString()}
+        ListEmptyComponent={<Loader />}
       />
     </>
   )

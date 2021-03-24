@@ -1,16 +1,18 @@
 import React from 'react'
 import { StyleSheet, Text, Image } from 'react-native'
-import { IModalItem } from '../types/modalItem'
+import { useRoute } from '@react-navigation/native'
 
-const ModalItem = ({ title, url }: IModalItem) => {
+const ModalScreen = () => {
+  const route = useRoute<any>()
+  const { title, url } = route.params?.item
   return (
     <>
       <Text style={styles.title} >{title}</Text>
       <Image style={styles.image} source={{ uri: url }} />
     </>
+
   )
 }
-
 
 const styles = StyleSheet.create({
   title: {
@@ -23,6 +25,4 @@ const styles = StyleSheet.create({
   }
 })
 
-
-
-export default ModalItem
+export default ModalScreen
